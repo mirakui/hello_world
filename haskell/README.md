@@ -134,6 +134,7 @@ map toUpper "Chris"
 => "CHRIS"
 ```
 
+## 引数のパターンマッチ
 ```haskell
 let a:_:_:_ = "xyz" in a
 => 'x'
