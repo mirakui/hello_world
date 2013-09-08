@@ -153,3 +153,12 @@ Prelude> :t (*)
 Prelude> :t drop 2
 drop 2 :: [a] -> [a]
 ```
+
+### lambda
+```haskell
+\x y z -> [x, y, z]
+```
+
+```ruby
+->(x,y,z) { [x,y,z] }.curry
+```
