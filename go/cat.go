@@ -1,11 +1,11 @@
 package main
 
-import(
-	"os"
+import (
 	"io"
+	"os"
 )
 
-const(
+const (
 	BufSize = 4096
 )
 
@@ -15,8 +15,10 @@ func cat(infile *os.File) {
 		n, err := infile.Read(outbuf)
 		if err != nil {
 			switch err {
-				case io.EOF: break
-				default: panic(err)
+			case io.EOF:
+				break
+			default:
+				panic(err)
 			}
 		}
 		if n > 0 {
