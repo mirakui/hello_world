@@ -40,6 +40,7 @@ func main() {
 		infile = os.Stdin
 	default:
 		fmt.Println("usage: grep pattern [file]")
+		os.Exit(1)
 	}
 
 	grep(pattern, infile)
