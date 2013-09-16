@@ -7,3 +7,7 @@
 guard 'go', server: 'cat.go', args: ['Gemfile'] do
   watch(%r{cat\.go$})
 end
+
+guard 'go', server: 'grep.go', args: ['gem', 'Gemfile'] do
+  watch(%r{grep\.go$})
+end
