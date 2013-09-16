@@ -39,7 +39,7 @@ func main() {
 	case count > 1:
 		infile = os.Stdin
 	default:
-		fmt.Println("usage: grep pattern [file]")
+		fmt.Fprintln(os.Stderr, "usage: grep pattern [file]")
 		os.Exit(1)
 	}
 
