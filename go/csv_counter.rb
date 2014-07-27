@@ -2,8 +2,7 @@ require 'csv'
 
 sum_lines = sum_cols = 0
 
-ARGF.each_line do |line|
-  cols = CSV.parse_line(line)
+CSV.foreach(ARGV[0]) do |cols|
   sum_cols += cols.length
   sum_lines += 1
 end
