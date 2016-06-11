@@ -6,7 +6,7 @@ function sh(cmd) {
   return new Promise( (resolve, reject) => {
       exec(cmd, (error, stdout, stderr) => {
         if (error) {
-          reject({error: error})
+          resolve({stdout: stdout, stderr: stderr, error: error})
         }
         else {
           resolve({stdout: stdout, stderr: stderr})
