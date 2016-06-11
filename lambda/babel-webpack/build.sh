@@ -43,8 +43,8 @@ cd ImageMagick-${IM_VER}
   CFLAGS="-I${PREFIX}/include"
 make && make install
 
-cd $TASK_DIR
-tar cvfz $OPT_TGZ $PREFIX
+cd $PREFIX
+tar cvfz $OPT_TGZ .
 
 set +x
 echo "build finished: ${OPT_TGZ}"

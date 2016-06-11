@@ -1,1 +1,3 @@
 node_modules
+functions/envcheck/opt
+*.tar.gz
