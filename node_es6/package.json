@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "build": "babel src -d lib",
-    "img": "babel src/img.js -d lib && node lib/img.js"
+    "img": "babel src -d lib && node lib/img.js"
   },
   "dependencies": {
     "babel-polyfill": "^6.3.14",
