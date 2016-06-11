@@ -1,0 +1,9 @@
+
+{
+  "name": "img",
+  "description": "making thumbnails on demand",
+  "memory": 128,
+  "timeout": 5,
+  "defaultEnvironment": "dev",
+  "environment": {}
+}
