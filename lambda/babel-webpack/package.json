@@ -5,7 +5,9 @@
   "dependencies": {
     "apex.js": "^1.0.0",
     "axios": "^0.9.1",
-    "babel-polyfill": "^6.3.14"
+    "babel-polyfill": "^6.3.14",
+    "gm": "^1.22.0",
+    "aws-sdk": "^2.3.19"
   },
   "devDependencies": {
     "babel-loader": "^6.2.3",
