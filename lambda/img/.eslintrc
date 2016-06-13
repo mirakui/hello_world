@@ -14,6 +14,7 @@
       "afterColon": true,
     }],
     "no-unused-vars": [1, {"vars" : "all", "args" : "after-used"} ],
-    "comma-dangle" : 2
+    "comma-dangle": 2,
+    "no-extra-semi": 2
   }
 }
