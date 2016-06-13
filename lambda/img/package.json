@@ -1,0 +1,11 @@
+{
+  "name": "img",
+  "version": "1.0.0",
+  "description": "img",
+  "dependencies": {
+    "gm": "^1.22.0",
+    "aws-sdk": "^2.3.19"
+  },
+  "devDependencies": {
+  }
+}
