@@ -1,0 +1,19 @@
+{
+  "env": {
+    "node": true,
+    "es6": true
+  },
+  "ecmaFeatures": {
+    "objectLiteralShorthandMethods" : true
+  },
+  "rules": {
+    "semi": [2 , "always"],
+    "strict": 2,
+    "key-spacing": [2, {
+      "beforeColon": false,
+      "afterColon": true,
+    }],
+    "no-unused-vars": [1, {"vars" : "all", "args" : "after-used"} ],
+    "comma-dangle" : 2
+  }
+}
