@@ -1,11 +1,14 @@
 'use strict';
 
 const AWS = require('aws-sdk');
-const gm = require('gm').subClass({ imageMagick: true, appPath: '/usr/local/bin/' });
+const gm = require('gm').subClass({
+  imageMagick: true,
+  appPath: '/var/task/bin/'
+});
 
 function s3Get(bucket, key) {
-  let s3 = new AWS.S3();
-  let params = {
+  const s3 = new AWS.S3();
+  const params = {
     Bucket: bucket,
     Key: key
   };
@@ -22,8 +25,8 @@ function s3Get(bucket, key) {
 }
 
 function s3Put(bucket, key, data) {
-  let s3 = new AWS.S3();
-  let params = {
+  const s3 = new AWS.S3();
+  const params = {
     Bucket: bucket,
     Key: key,
     Body: data
@@ -60,11 +63,11 @@ exports.handle = function(e, ctx, cb) {
 
   const key = 'test/1/1.jpg';
   s3Get('mirakui-img', key).then(
-    resp => resize(resp.Body, 100, 100)
+    (resp) => resize(resp.Body, 100, 100)
   ).then(
-    buffer => s3Put('mirakui-img-deliver', key, buffer)
+    (buffer) => s3Put('mirakui-img-deliver', key, buffer)
   ).catch(
-    e => console.error(e)
+    (e) => console.error(e)
   );
   cb(null, { key: 'key' });
 };
