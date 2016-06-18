@@ -3,7 +3,7 @@
 const AWS = require('aws-sdk');
 const gm = require('gm').subClass({
   imageMagick: true,
-  appPath: '/var/task/bin/'
+  appPath: '/var/task/opt/bin/'
 });
 
 function s3Get(bucket, key) {
