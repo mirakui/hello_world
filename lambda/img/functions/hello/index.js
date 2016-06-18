@@ -99,11 +99,14 @@ exports.handle = function(e, ctx, cb) {
     const srcBucket = record.s3.bucket.name;
     const key = record.s3.object.key;
     return processObject(srcBucket, key);
-  }).filter((p) => { !!p });
+  });
 
-  const results = Promise.all(promises);
-
-  cb(null, { results: results });
+  Promise.all(promises).then(
+    (results) => {
+      console.log('finished');
+      cb(null, { results: results })
+    }
+  );
 };
 
 function loadJsonFromStdin() {
@@ -119,7 +122,7 @@ function loadJsonFromStdin() {
 
 if (!isLambda) {
   loadJsonFromStdin().
-    then( e => exports.handle(e, {}, (_, result) => {
-      console.log('result: %j', result);
+    then( e => exports.handle(e, {}, (_, results) => {
+      console.log('results: %j', results);
     }));
 }
