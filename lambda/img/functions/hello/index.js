@@ -57,7 +57,7 @@ function makeThumbnail(data) {
 
   return new Promise((resolve, reject) => {
     gm(data).
-      resize(`${imgConfig.thumbnailWidth}1000`).
+      resize(`${imgConfig.thumbnailWidth}>`).
       define(`jpeg:size=${imgConfig.thumbnailWidth}`).
       limit('map', '0MiB').
       limit('disk', '0MiB').
@@ -78,17 +78,15 @@ function makeThumbnail(data) {
 }
 
 function processObject(srcBucket, key) {
-  return new Promise((resolve, reject) => {
-    s3Get(srcBucket, key).then(
-      (resp) => makeThumbnail(resp.Body)
-    ).then(
-      (buffer) => s3Put(imgConfig.dstBucket, key, buffer)
-    ).then(
-      () => resolve({ key: key, status: 'success' })
-    ).catch(
-      (e) => reject({ key: key, status: 'error', error: e })
-    );
-  });
+  return s3Get(srcBucket, key).then(
+    (resp) => makeThumbnail(resp.Body)
+  ).then(
+    (buffer) => s3Put(imgConfig.dstBucket, key, buffer)
+  ).then(
+    () => Promise.resolve({ key: key, status: 'success' })
+  ).catch(
+    (e) => Promise.reject({ key: key, status: 'error', error: e })
+  );
 }
 
 exports.handle = function(e, ctx, cb) {
@@ -102,10 +100,7 @@ exports.handle = function(e, ctx, cb) {
   });
 
   Promise.all(promises).then(
-    (results) => {
-      console.log('finished');
-      cb(null, { results: results })
-    }
+    (results) => cb(null, { results: results })
   );
 };
 
@@ -115,14 +110,14 @@ function loadJsonFromStdin() {
     let buf = '';
     stdin.resume();
     stdin.setEncoding('utf8');
-    stdin.on('data', (chunk) => { buf += chunk });
-    stdin.on('end', () => { resolve(JSON.parse(buf)) });
+    stdin.on('data', (chunk) => { buf += chunk; });
+    stdin.on('end', () => resolve(JSON.parse(buf)));
   });
 }
 
 if (!isLambda) {
   loadJsonFromStdin().
-    then( e => exports.handle(e, {}, (_, results) => {
+    then((e) => exports.handle(e, {}, (_, results) => {
       console.log('results: %j', results);
     }));
 }
