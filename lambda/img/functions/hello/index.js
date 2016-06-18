@@ -1,9 +1,10 @@
 'use strict';
 
+const isLambda = !!module.parent;
 const AWS = require('aws-sdk');
 const gm = require('gm').subClass({
   imageMagick: true,
-  appPath: '/var/task/opt/bin/'
+  appPath: isLambda ? '/var/task/opt/bin/' : ''
 });
 
 function s3Get(bucket, key) {
@@ -72,6 +73,6 @@ exports.handle = function(e, ctx, cb) {
   cb(null, { key: 'key' });
 };
 
-if (!module.parent) {
+if (!isLambda) {
   exports.handle({}, {}, (x, y) => {});
 }
