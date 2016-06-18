@@ -6,8 +6,14 @@ const gm = require('gm').subClass({
   imageMagick: true,
   appPath: isLambda ? '/var/task/opt/bin/' : ''
 });
+const imgConfig = {
+  thumbnailWidth: '1000',
+  dstBucket: 'mirakui-img-deliver'
+};
 
 function s3Get(bucket, key) {
+  console.log('s3Get: bucket=%s, key=%s', bucket, key);
+
   const s3 = new AWS.S3();
   const params = {
     Bucket: bucket,
@@ -26,6 +32,8 @@ function s3Get(bucket, key) {
 }
 
 function s3Put(bucket, key, data) {
+  console.log('s3Put: bucket=%s, key=%s', bucket, key);
+
   const s3 = new AWS.S3();
   const params = {
     Bucket: bucket,
@@ -45,10 +53,12 @@ function s3Put(bucket, key, data) {
 }
 
 function makeThumbnail(data) {
+  console.log('makeThumbnail: size=%d', data.length);
+
   return new Promise((resolve, reject) => {
     gm(data).
-      resize('1000>').
-      define('jpeg:size=1000').
+      resize(`${imgConfig.thumbnailWidth}1000`).
+      define(`jpeg:size=${imgConfig.thumbnailWidth}`).
       limit('map', '0MiB').
       limit('disk', '0MiB').
       repage('+').
@@ -67,20 +77,49 @@ function makeThumbnail(data) {
   });
 }
 
+function processObject(srcBucket, key) {
+  return new Promise((resolve, reject) => {
+    s3Get(srcBucket, key).then(
+      (resp) => makeThumbnail(resp.Body)
+    ).then(
+      (buffer) => s3Put(imgConfig.dstBucket, key, buffer)
+    ).then(
+      () => resolve({ key: key, status: 'success' })
+    ).catch(
+      (e) => reject({ key: key, status: 'error', error: e })
+    );
+  });
+}
+
 exports.handle = function(e, ctx, cb) {
   console.log('processing event: %j', e);
 
-  const key = 'test/1/1.jpg';
-  s3Get('mirakui-img', key).then(
-    (resp) => makeThumbnail(resp.Body)
-  ).then(
-    (buffer) => s3Put('mirakui-img-deliver', key, buffer)
-  ).catch(
-    (e) => console.error(e)
-  );
-  cb(null, { key: 'key' });
+  const promises = e.Records.map((record) => {
+    if (!record.s3) { return null; }
+    const srcBucket = record.s3.bucket.name;
+    const key = record.s3.object.key;
+    return processObject(srcBucket, key);
+  }).filter((p) => { !!p });
+
+  const results = Promise.all(promises);
+
+  cb(null, { results: results });
 };
 
+function loadJsonFromStdin() {
+  return new Promise((resolve, reject) => {
+    const stdin = process.stdin;
+    let buf = '';
+    stdin.resume();
+    stdin.setEncoding('utf8');
+    stdin.on('data', (chunk) => { buf += chunk });
+    stdin.on('end', () => { resolve(JSON.parse(buf)) });
+  });
+}
+
 if (!isLambda) {
-  exports.handle({}, {}, (x, y) => {});
+  loadJsonFromStdin().
+    then( e => exports.handle(e, {}, (_, result) => {
+      console.log('result: %j', result);
+    }));
 }
