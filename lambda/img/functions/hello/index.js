@@ -44,10 +44,18 @@ function s3Put(bucket, key, data) {
   });
 }
 
-function resize(data, width, height) {
+function makeThumbnail(data) {
   return new Promise((resolve, reject) => {
     gm(data).
-      resize(width, height).
+      resize('1000>').
+      define('jpeg:size=1000').
+      limit('map', '0MiB').
+      limit('disk', '0MiB').
+      repage('+').
+      out('-auto-orient').
+      quality(90).
+      colorspace('sRGB').
+      strip().
       toBuffer('JPG', (err, buffer) => {
         if (err) {
           reject(err);
@@ -64,7 +72,7 @@ exports.handle = function(e, ctx, cb) {
 
   const key = 'test/1/1.jpg';
   s3Get('mirakui-img', key).then(
-    (resp) => resize(resp.Body, 100, 100)
+    (resp) => makeThumbnail(resp.Body)
   ).then(
     (buffer) => s3Put('mirakui-img-deliver', key, buffer)
   ).catch(
