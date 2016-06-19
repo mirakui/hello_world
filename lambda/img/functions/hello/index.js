@@ -22,30 +22,40 @@ function s3Get(bucket, key) {
   return new Promise((resolve, reject) => {
     s3.getObject(params, (err, data) => {
       if (err) {
+        console.log('s3Get: [reject] %j', err);
         reject(err);
       }
       else {
+        console.log('s3Get: [resolve]');
         resolve(data);
       }
     });
   });
 }
 
-function s3Put(bucket, key, data) {
-  console.log('s3Put: bucket=%s, key=%s', bucket, key);
+function s3Put(bucket, key, data, meta) {
+  console.log('s3Put: bucket=%s, key=%s, meta=%j', bucket, key, meta);
 
   const s3 = new AWS.S3();
-  const params = {
+  let params = {
     Bucket: bucket,
     Key: key,
     Body: data
   };
+  console.log('s3Put: meta=%j', meta);
+  for (const k in meta) {
+    console.log('s3Put: k=%j', k);
+  }
+  console.log('s3Put: params=%j', meta);
+
   return new Promise((resolve, reject) => {
     s3.putObject(params, (err, data) => {
       if (err) {
+        console.log('s3Put: [reject] %j', err);
         reject(err);
       }
       else {
+        console.log('s3Put: [resolve]');
         resolve(data);
       }
     });
@@ -68,10 +78,30 @@ function makeThumbnail(data) {
       strip().
       toBuffer('JPG', (err, buffer) => {
         if (err) {
+          console.log('makeThumbnail: [reject] %j', err);
           reject(err);
         }
         else {
+          console.log('makeThumbnail: [resolve]');
           resolve(buffer);
+        }
+      });
+  });
+}
+
+function getGeometry(data) {
+  console.log('getGeometry: size=%d', data.length);
+
+  return new Promise((resolve, reject) => {
+    gm(data).
+      size((err, size) => {
+        if (err) {
+          console.log('getGeometry: [reject] %j', err);
+          reject(err);
+        }
+        else {
+          console.log('getGeometry: [resolve] %j', size);
+          resolve([data, size]);
         }
       });
   });
@@ -81,11 +111,19 @@ function processObject(srcBucket, key) {
   return s3Get(srcBucket, key).then(
     (resp) => makeThumbnail(resp.Body)
   ).then(
-    (buffer) => s3Put(imgConfig.dstBucket, key, buffer)
+    (buffer) => getGeometry(buffer)
+  ).then(
+    (arr) => {
+      const buffer = arr[0], geom = arr[1];
+      return s3Put(
+        imgConfig.dstBucket, key, buffer,
+        { 'X-ThumbnailWidth': geom.width, 'X-ThumbnailHeight': geom.height }
+      );
+    }
   ).then(
     () => Promise.resolve({ key: key, status: 'success' })
   ).catch(
-    (e) => Promise.reject({ key: key, status: 'error', error: e })
+    (e) => Promise.resolve({ key: key, status: 'error', error: e })
   );
 }
 
