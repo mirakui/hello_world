@@ -1,0 +1,4 @@
+[root]
+name = "json2yaml"
+version = "0.1.0"
+
