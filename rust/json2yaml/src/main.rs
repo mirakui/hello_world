@@ -1,10 +1,13 @@
 // use std::io;
 // use std::fmt;
+use std::collections::HashMap;
 
-struct ObjectNode<'a> {
-    key: String,
-    value: &'a ValueNode,
-}
+// struct ObjectNode<'a> {
+//     key: String,
+//     value: &'a ValueNode,
+// }
+
+type ObjectNode<'a> = HashMap<String, &'a ValueNode>;
 
 trait ValueNode {
     fn to_json(&self) -> String;
@@ -12,7 +15,10 @@ trait ValueNode {
 
 impl<'a> ValueNode for ObjectNode<'a> {
     fn to_json(&self) -> String {
-        format!("{{\"{}\": {}}}", self.key, self.value.to_json())
+        self.iter()
+            .map(|key, value| key)
+            .collect()
+            .connect(",")
     }
 }
 impl<'a> ValueNode for String {
@@ -22,12 +28,9 @@ impl<'a> ValueNode for String {
 }
 
 fn main() {
-    let root: ObjectNode = ObjectNode {
-        key: "foo".to_string(),
-        value: &"bar".to_string(),
-    };
-    let obj: &ValueNode = &root;
+    let mut obj: ObjectNode::new();
+    obj.insert("key1", "value1".to_string());
+    obj.insert("key2", "value2".to_string());
 
-    println!("{}", root.to_json());
     println!("{}", obj.to_json());
 }
