@@ -1,4 +1,4 @@
-import { Kinesis } from "aws-sdk";
+import { Kinesis } from "@aws-sdk/client-kinesis";
 
 const kinesis = new Kinesis();
 
@@ -14,7 +14,7 @@ async function putRecordToStream(
   };
 
   try {
-    await kinesis.putRecord(params).promise();
+    await kinesis.putRecord(params);
     console.log(`Successfully put record into stream ${streamName}`);
   } catch (err) {
     console.log(`Error putting record into stream ${streamName}: ${err}`);

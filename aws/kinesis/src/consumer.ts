@@ -1,4 +1,4 @@
-import { Kinesis } from "aws-sdk";
+import { Kinesis } from "@aws-sdk/client-kinesis";
 
 const STREAM_NAME = "data-stream-naruta";
 
@@ -8,7 +8,7 @@ async function listShards(kinesis: Kinesis, streamName: string) {
   };
 
   try {
-    const data = await kinesis.listShards(params).promise();
+    const data = await kinesis.listShards(params);
     return data.Shards;
   } catch (err) {
     console.log(`Error listing shards for stream ${streamName}: ${err}`);
@@ -27,7 +27,7 @@ async function getShardIterator(
   };
 
   try {
-    const data = await kinesis.getShardIterator(params).promise();
+    const data = await kinesis.getShardIterator(params);
     return data.ShardIterator;
   } catch (err) {
     console.log(
@@ -40,7 +40,7 @@ async function readStreamFromShard(kinesis: Kinesis, shardIterator: string) {
   try {
     const data = await kinesis.getRecords({
       ShardIterator: shardIterator,
-    }).promise();
+    });
     const records = data.Records;
 
     for (const record of records) {
