@@ -240,17 +240,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ieee754@npm:1.1.13":
+"ieee754@npm:1.1.13, ieee754@npm:^1.1.4":
   version: 1.1.13
   resolution: "ieee754@npm:1.1.13"
   checksum: 49d53ff5f9ac31f760044f784eb30b5a3b44b005f63eaa687be3103f80b89fd8f6323f89d8276180156dedf088b2857f86998a82a6bb00d36393cf53928f3491
-  languageName: node
-  linkType: hard
-
-"ieee754@npm:^1.1.4":
-  version: 1.2.1
-  resolution: "ieee754@npm:1.2.1"
-  checksum: b39fbc42879544ab1989f8ff439a3f3545d7c244a07f24607c4223291ba82ce95964a7b7fde24010ba899937046c4dfe01398c8f8bbddb53f9e562c29f18f615
   languageName: node
   linkType: hard
 
@@ -347,17 +340,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sax@npm:1.2.1":
+"sax@npm:1.2.1, sax@npm:>=0.6.0":
   version: 1.2.1
   resolution: "sax@npm:1.2.1"
   checksum: 379d2760898397b9d026ed5d465125c135d4e8a1be6309764f4d9aeddd593cd38e2d5e0bb998ec80e5021e24a89a57644eae19e23463c6807d4c0ca76295c225
-  languageName: node
-  linkType: hard
-
-"sax@npm:>=0.6.0":
-  version: 1.2.4
-  resolution: "sax@npm:1.2.4"
-  checksum: 2917c3ef3cab1307aa14036705b599c7fd1b51756189e67bd1f23193cdc5ceac9bd59104830542cfb6326febfd1dce73acc08fecfa615c4c920c94a9a6ccbda4
   languageName: node
   linkType: hard
 
