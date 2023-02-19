@@ -28,6 +28,8 @@ async function putRecordToStream(
 }
 
 // Usage
+// TODO: consumer 側で shard 毎に送った数を数えて、 producer 側で送った数と一致するか確認する
+
 let i = 0;
 setInterval(() => {
   putRecordToStream("data-stream-naruta", `partition-key-${i}`, {
@@ -35,4 +37,4 @@ setInterval(() => {
     body: `hello! ${i++}`,
   });
   i++;
-}, 100);
+}, 10);

@@ -1,8 +1,6 @@
 import {
   GetRecordsCommand,
   GetShardIteratorCommand,
-  GetShardIteratorInput,
-  Kinesis,
   KinesisClient,
   ListShardsCommand,
 } from "@aws-sdk/client-kinesis";
@@ -29,7 +27,7 @@ async function getShardIterator(
 ) {
   const params = {
     ShardId: shardId,
-    ShardIteratorType: "LATEST",
+    ShardIteratorType: "TRIM_HORIZON",
     StreamName: streamName,
   };
 
@@ -58,16 +56,14 @@ async function readAllFromShard(kinesis: KinesisClient, shardName: string) {
 
     if (records && records.length > 0) {
       for (const record of records) {
-        const data = record.Data
-          ? JSON.parse(new TextDecoder().decode(record.Data))
-          : null;
+        const data = record.Data ? new TextDecoder().decode(record.Data) : null;
         console.log(`[${shardName}] Record Data:`, data);
         console.log(`[${shardName}] Partition Key:`, record.PartitionKey);
         console.log(`[${shardName}] Sequence Number:`, record.SequenceNumber);
       }
     } else {
-      // console.log(`[${shardName}] no records`);
-      // break;
+      console.log(`[${shardName}] no records`);
+      break;
     }
 
     shardIterator = data.NextShardIterator;
