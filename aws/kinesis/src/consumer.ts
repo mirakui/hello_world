@@ -41,9 +41,14 @@ async function getShardIterator(
   }
 }
 
-async function readAllFromShard(kinesis: KinesisClient, shardName: string) {
+async function readAllFromShard(
+  kinesis: KinesisClient,
+  streamName: string,
+  shardName: string,
+) {
   console.log(`[${shardName}] start reading`);
-  var shardIterator = await getShardIterator(kinesis, STREAM_NAME, shardName);
+  let shardIterator = await getShardIterator(kinesis, streamName, shardName);
+  let readCount = 0;
   while (shardIterator) {
     console.log(`[${shardName}] --- reading...`);
 
@@ -60,6 +65,8 @@ async function readAllFromShard(kinesis: KinesisClient, shardName: string) {
         console.log(`[${shardName}] Record Data:`, data);
         console.log(`[${shardName}] Partition Key:`, record.PartitionKey);
         console.log(`[${shardName}] Sequence Number:`, record.SequenceNumber);
+
+        readCount++;
       }
     } else {
       console.log(`[${shardName}] no records`);
@@ -69,6 +76,25 @@ async function readAllFromShard(kinesis: KinesisClient, shardName: string) {
     shardIterator = data.NextShardIterator;
   }
   console.log(`[${shardName}] finished reading`);
+  return readCount;
+}
+
+async function readAllShard(kinesis: KinesisClient, streamName: string) {
+  const shards = await listShards(kinesis, streamName);
+  let shardSummary: { [shardId: string]: number } = {};
+  if (shards) {
+    for (const shard of shards) {
+      if (shard?.ShardId) {
+        const readCount = await readAllFromShard(
+          kinesis,
+          streamName,
+          shard.ShardId,
+        );
+        shardSummary[shard.ShardId] = readCount;
+      }
+    }
+  }
+  return shardSummary;
 }
 
 (async () => {
@@ -87,14 +113,6 @@ async function readAllFromShard(kinesis: KinesisClient, shardName: string) {
     return;
   }
 
-  setInterval(() => {
-    for (const shard of shards) {
-      console.log(`Shard ID: ${shard.ShardId}`);
-      if (shard?.ShardId) {
-        readAllFromShard(kinesis, shard.ShardId);
-      }
-    }
-  }, 5000);
-
-  console.log("all finished");
+  const shardSummary = await readAllShard(kinesis, STREAM_NAME);
+  console.log("shard summary:", shardSummary);
 })();
