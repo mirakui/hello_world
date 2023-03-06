@@ -2,5 +2,5 @@
 
 exports.handler = async (event, context) => {
   console.log("hello");
-  return 'Hello World!';
+  return "Hello World\n";
 }

@@ -22,7 +22,7 @@ COPY myFunction/* ${FUNCTION_DIR}
 WORKDIR ${FUNCTION_DIR}
 
 # If the dependency is not in package.json uncomment the following line
-# RUN npm install aws-lambda-ric
+RUN npm install aws-lambda-ric
 
 RUN npm install
 
